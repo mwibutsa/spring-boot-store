@@ -1,4 +1,4 @@
-package com.codewithmosh.store.entities;
+package com.mwibutsa.store.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,9 +49,9 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-        name = "wishlist",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "product_id")
+            name = "wishlist",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private Set<Product> favoriteProducts = new HashSet<>();
 

@@ -1,0 +1,50 @@
+PUT http://localhost:8080/users/1/change-password
+Content-Type: application/json
+
+{
+  "oldPassword": "Password@1!",
+  "newPassword": "NewPassword"
+}
+
+###
+DELETE http://localhost:8080/users/6
+Accept: application/json
+
+###
+PUT http://localhost:8080/users/6
+Content-Type: application/json
+
+{
+  "name": "Mwibutsa Floribert Updated",
+  "email": "updated.fmwibutsa@gmail.com"
+}
+
+###
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "Mwibutsa Floribert",
+  "email": "fmwibutsa@gmail.com",
+  "password": "Password!33"
+}
+
+###
+###
+GET http://localhost:8080/products/15
+Accept: application/json
+
+###
+GET http://localhost:8080/products
+Accept: application/json
+x-auth-token: 1234
+
+###
+GET http://localhost:8080/users/6
+Accept: application/json
+
+###
+GET http://localhost:8080/users?sort=name
+Accept: application/json
+
+###
