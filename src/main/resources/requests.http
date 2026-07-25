@@ -1,3 +1,12 @@
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "floribert1.mwibutsa@gmail.com",
+  "password": "Password@1"
+}
+
+###
 DELETE {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e/items
 Content-Type: application/json
 
@@ -84,9 +93,9 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-  "name": "Mwibutsa Floribert",
-  "email": "fmwibutsa@gmail.com",
-  "password": "PassWord!2"
+  "name": "With Hashed",
+  "email": "floribert.mwibutsa@gmail.com",
+  "password": "Password@1"
 }
 
 ###
