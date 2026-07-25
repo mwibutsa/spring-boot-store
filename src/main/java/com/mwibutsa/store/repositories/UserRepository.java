@@ -12,5 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = {"profile"})
     List<User> findAll(Sort sort);
 
-    
+
+    boolean existsByEmail(String email);
 }

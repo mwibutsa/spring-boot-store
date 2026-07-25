@@ -12,9 +12,4 @@ public class HomeController {
         model.addAttribute("name", "Mwibutsa");
         return "index";
     }
-
-//    @RequestMapping("/")
-//    public String sayHello() {
-//        return "index.html";
-//    }
 }

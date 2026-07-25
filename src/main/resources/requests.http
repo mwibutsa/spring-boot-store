@@ -1,3 +1,21 @@
+GET {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e
+Accept: application/json
+
+###
+POST {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e
+Content-Type: application/json
+
+{
+  "productId": 2
+}
+
+###
+POST {{host}}/carts
+Content-Type: application/json
+
+{}
+
+###
 DELETE {{host}}/products/6
 Accept: application/json
 
@@ -52,7 +70,7 @@ Content-Type: application/json
 {
   "name": "Mwibutsa Floribert",
   "email": "fmwibutsa@gmail.com",
-  "password": "Password!33"
+  "password": "PassWord!2"
 }
 
 ###
