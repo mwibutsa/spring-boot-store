@@ -1,12 +1,28 @@
+DELETE {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e/items
+Content-Type: application/json
+
+###
+DELETE {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e/items/1
+Content-Type: application/json
+
+###
+PUT {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e/items/2
+Content-Type: application/json
+
+{
+  "quantity": 20
+}
+
+###
 GET {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e
 Accept: application/json
 
 ###
-POST {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e
+POST {{host}}/carts/dbc90bd8-e838-4023-9f72-edf05cc6f23e/items
 Content-Type: application/json
 
 {
-  "productId": 2
+  "productId": 1
 }
 
 ###
