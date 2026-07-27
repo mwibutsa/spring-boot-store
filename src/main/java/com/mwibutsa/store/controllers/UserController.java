@@ -4,6 +4,7 @@ import com.mwibutsa.store.dto.ChangePasswordRequest;
 import com.mwibutsa.store.dto.RegisterUserRequest;
 import com.mwibutsa.store.dto.UpdateUserRequest;
 import com.mwibutsa.store.dto.UserDto;
+import com.mwibutsa.store.entities.Role;
 import com.mwibutsa.store.entities.User;
 import com.mwibutsa.store.mappers.UserMapper;
 import com.mwibutsa.store.repositories.UserRepository;
@@ -27,6 +28,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+
 
     @GetMapping
     public List<UserDto> getAllUsers(@RequestParam(required = false, defaultValue = "", name = "sort") String sort) {
@@ -60,6 +62,7 @@ public class UserController {
 
         User user = userMapper.toEntity(payload);
         user.setPassword(passwordEncoder.encode(payload.getPassword()));
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         UserDto userDto = userMapper.toDto(user);
