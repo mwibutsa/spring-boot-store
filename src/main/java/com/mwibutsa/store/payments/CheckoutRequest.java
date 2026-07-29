@@ -1,4 +1,4 @@
-package com.mwibutsa.store.dto;
+package com.mwibutsa.store.payments;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

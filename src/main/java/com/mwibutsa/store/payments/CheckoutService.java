@@ -1,13 +1,12 @@
-package com.mwibutsa.store.services;
+package com.mwibutsa.store.payments;
 
-import com.mwibutsa.store.dto.CheckoutRequest;
-import com.mwibutsa.store.dto.CheckoutResponse;
 import com.mwibutsa.store.entities.Order;
 import com.mwibutsa.store.exceptions.CartEmptyException;
 import com.mwibutsa.store.exceptions.CartNotFoundException;
-import com.mwibutsa.store.exceptions.PaymentException;
 import com.mwibutsa.store.repositories.CartRepository;
 import com.mwibutsa.store.repositories.OrderRepository;
+import com.mwibutsa.store.services.AuthService;
+import com.mwibutsa.store.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ public class CheckoutService {
 
     @Value("${websiteUrl}")
     private String websiteUrl;
+
 
     @Transactional
     public CheckoutResponse checkout(CheckoutRequest payload) {
@@ -43,10 +43,19 @@ public class CheckoutService {
             var checkoutSession = paymentGateway.createCheckoutSession(order);
             cartService.clearCart(cart.getId());
             return new CheckoutResponse(order.getId(), checkoutSession.getCheckoutUrl());
-        } catch (PaymentException ex) {
+        } catch (CheckoutController.PaymentException ex) {
             orderRepository.delete(order);
             throw ex;
         }
 
+    }
+
+    public void handleWebhookEvent(WebhookRequest request) {
+        paymentGateway.parseWebhookRequest(request).ifPresent(paymentResult -> {
+                    var order = orderRepository.findById(paymentResult.getOrderId()).orElseThrow();
+                    order.setStatus(paymentResult.getPaymentStatus());
+                    orderRepository.save(order);
+                }
+        );
     }
 }

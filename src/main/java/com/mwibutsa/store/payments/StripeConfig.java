@@ -1,4 +1,4 @@
-package com.mwibutsa.store.config;
+package com.mwibutsa.store.payments;
 
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;

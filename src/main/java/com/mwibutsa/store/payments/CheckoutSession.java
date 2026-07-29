@@ -1,4 +1,4 @@
-package com.mwibutsa.store.services;
+package com.mwibutsa.store.payments;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
