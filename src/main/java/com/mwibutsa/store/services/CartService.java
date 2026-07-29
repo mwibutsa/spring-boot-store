@@ -23,7 +23,7 @@ public class CartService {
     private final CartMapper cartMapper;
     private final ProductRepository productRepository;
 
-    public CartDto creatCart() {
+    public CartDto createCart() {
         var cart = new Cart();
         cartRepository.save(cart);
         return cartMapper.toDto(cart);
@@ -97,5 +97,5 @@ public class CartService {
         cart.clearItems();
         cartRepository.save(cart);
     }
-    
+
 }

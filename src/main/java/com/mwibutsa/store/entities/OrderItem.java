@@ -36,4 +36,12 @@ public class OrderItem {
     private BigDecimal totalPrice;
 
 
+    public OrderItem(Order order, Product product, Integer quantity) {
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = product.getPrice();
+        this.totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+
+    }
 }

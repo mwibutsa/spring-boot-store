@@ -122,7 +122,11 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.13.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>33.1.1</version>
+        </dependency>
     </dependencies>
 
     <build>

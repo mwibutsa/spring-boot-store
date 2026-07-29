@@ -2,70 +2,83 @@ package com.mwibutsa.store.controllers;
 
 
 import com.mwibutsa.store.dto.CheckoutRequest;
-import com.mwibutsa.store.dto.CheckoutResponse;
-import com.mwibutsa.store.entities.Order;
-import com.mwibutsa.store.entities.OrderItem;
+import com.mwibutsa.store.dto.ErrorDto;
 import com.mwibutsa.store.entities.OrderStatus;
+import com.mwibutsa.store.exceptions.CartEmptyException;
 import com.mwibutsa.store.exceptions.CartNotFoundException;
-import com.mwibutsa.store.repositories.CartRepository;
+import com.mwibutsa.store.exceptions.PaymentException;
 import com.mwibutsa.store.repositories.OrderRepository;
-import com.mwibutsa.store.services.AuthService;
-import com.mwibutsa.store.services.CartService;
+import com.mwibutsa.store.services.CheckoutService;
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.model.PaymentIntent;
+import com.stripe.net.Webhook;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/checkout")
 public class CheckoutController {
+    private final CheckoutService checkoutService;
     private final OrderRepository orderRepository;
-    private final CartRepository cartRepository;
-    private final AuthService authService;
-    private final CartService cartService;
+
+    @Value("${stripe.webhookSecretKey}")
+    private String webhookSecretKey;
+
+    @PostMapping("/webhook")
+    public ResponseEntity<Void> handleWebhook(
+            @RequestHeader("Stripe-Signature") String signature,
+            @RequestBody String payload
+
+    ) {
+        try {
+            var event = Webhook.constructEvent(payload, signature, webhookSecretKey);
+            IO.println(event.getType());
+            var stripeObject = event.getDataObjectDeserializer().getObject().orElse(null);
+
+            switch (event.getType()) {
+                case "payment_intent.succeeded" -> {
+
+                    var paymentIntent = (PaymentIntent) stripeObject;
+                    // PAID
+                    assert paymentIntent != null;
+                    var order = orderRepository.findById(Long.valueOf(paymentIntent.getMetadata().get("order_id"))).orElseThrow();
+                    order.setStatus(OrderStatus.PAID);
+                    orderRepository.save(order);
+                }
+
+                case "payment_intent.failed" -> {
+                    // failed.
+                }
+            }
+            return ResponseEntity.ok().build();
+        } catch (SignatureVerificationException ex) {
+            IO.println(ex.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
     @PostMapping
     ResponseEntity<?> checkout(
             @Valid @RequestBody CheckoutRequest payload
     ) {
-        var cart = cartRepository.findById(payload.getCardId()).orElse(null);
-        if (cart == null) {
-            throw new CartNotFoundException();
-        }
 
-        var items = cart.getItems();
-
-        if (items.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Cart is empty"));
-        }
-
-        var order = new Order();
-        order.setTotalPrice(cart.getTotalPrice());
-        order.setStatus(OrderStatus.PENDING);
-        order.setCustomer(authService.getCurrentUser());
-
-        items.forEach(item -> {
-            var orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setUnitPrice(item.getProduct().getPrice());
-            orderItem.setTotalPrice(item.getTotalPrice());
-            orderItem.setQuantity(item.getQuantity());
-            orderItem.setProduct(item.getProduct());
-
-            order.getItems().add(orderItem);
-        });
-        
-        orderRepository.save(order);
-        cartService.clearCart(cart.getId());
-
-        return ResponseEntity.ok(new CheckoutResponse(order.getId()));
+        return ResponseEntity.ok(checkoutService.checkout(payload));
     }
 
+    @ExceptionHandler({CartNotFoundException.class, CartEmptyException.class})
+    public ResponseEntity<ErrorDto> handleException(Exception ex) {
+        return ResponseEntity.badRequest().body(new ErrorDto(ex.getMessage()));
+    }
 
+    @ExceptionHandler({PaymentException.class})
+    public ResponseEntity<?> handlePaymentException() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorDto("Error creating a checkout session"));
+    }
 }

@@ -28,7 +28,7 @@ public class CartController {
     public ResponseEntity<CartDto> createCart(
             UriComponentsBuilder uriBuilder
     ) {
-        var cartDto = cartService.creatCart();
+        var cartDto = cartService.createCart();
         var uri = uriBuilder.path("/carts/{id}").buildAndExpand(cartDto.getId()).toUri();
         return ResponseEntity.created(uri).body(cartDto);
     }
@@ -69,7 +69,7 @@ public class CartController {
     public ResponseEntity<?> clearCart(
             @PathVariable UUID cartId
     ) {
-        cartService.creatCart();
+        cartService.clearCart(cartId);
         return ResponseEntity.noContent().build();
     }
 

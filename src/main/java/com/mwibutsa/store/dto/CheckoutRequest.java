@@ -8,5 +8,5 @@ import java.util.UUID;
 @Data
 public class CheckoutRequest {
     @NotNull
-    private UUID cardId;
+    private UUID cartId;
 }
