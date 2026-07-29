@@ -1,22 +1,12 @@
 spring:
   application:
     name: store
-  datasource:
-    url: jdbc:mysql://localhost:3306/store_api?createDatabaseIfNotExist=true
-    username: code_evangelist
-    password: Password!1
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        highlight_sql: true
   jwt:
     secret: ${JWT_SECRET}
     accessTokenExpiration: 7200
     refreshTokenExpiration: 604800
-
+  profiles:
+    active: dev
 stripe:
   secretKey: ${STRIPE_SECRET_KEY}
   webhookSecretKey: ${STRIPE_WEBHOOK_SECRET_KEY}
-websiteUrl: http://localhost:4242
